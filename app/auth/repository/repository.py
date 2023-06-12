@@ -14,9 +14,6 @@ class AuthRepository:
         payload = {
             "email": user["email"],
             "password": hash_password(user["password"]),
-            "phone": user["phone"],
-            "name": user["name"],
-            "city": user["city"],
             "created_at": datetime.utcnow(),
         }
 
@@ -38,14 +35,16 @@ class AuthRepository:
         )
         return user
 
-    def update_user(self, user_id: str, data: dict):
-        self.database["users"].update_one(
-            filter={"_id": ObjectId(user_id)},
-            update={
+    def edit_user_by_id(self, user_id: str, userData: dict) -> dict | None:
+        user = self.database["users"].update_one(
+            {"_id": ObjectId(user_id)},
+            {
                 "$set": {
-                    "phone": data["phone"],
-                    "name": data["name"],
-                    "city": data["city"],
+                    "phone": userData["phone"],
+                    "name": userData["name"],
+                    "city": userData["city"],
                 }
             },
         )
+
+        return user

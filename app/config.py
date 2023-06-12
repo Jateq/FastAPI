@@ -21,7 +21,7 @@ env = Config()
 
 # FastAPI configurations
 fastapi_config: dict[str, Any] = {
-    "title": "Shanyraq.kz API",
+    "title": "API",
 }
 
 # MongoDB connection
