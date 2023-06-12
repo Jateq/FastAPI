@@ -9,10 +9,16 @@ from . import router
 class RegisterUserRequest(AppModel):
     email: str
     password: str
+    phone: str
+    name: str
+    city: str
 
 
 class RegisterUserResponse(AppModel):
     email: str
+    phone: str
+    name: str
+    city: str
 
 
 @router.post(

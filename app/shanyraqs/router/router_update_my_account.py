@@ -11,18 +11,23 @@ from . import router
 from .dependencies import parse_jwt_user_data
 
 
-class GetMyAccountResponse(AppModel):
-    id: Any = Field(alias="_id")
-    email: str
+class UpdateMyAccountRequest(AppModel):
     phone: str
     name: str
     city: str
 
 
-@router.get("/users/me", response_model=GetMyAccountResponse)
-def get_my_account(
+class UpdateMyAccountResponse(AppModel):
+    phone: str
+    name: str
+    city: str
+
+
+@router.patch("/users/me/update", response_model=UpdateMyAccountResponse)
+def update_my_account(
+    input: UpdateMyAccountRequest,
     jwt_data: JWTData = Depends(parse_jwt_user_data),
     svc: Service = Depends(get_service),
 ) -> dict[str, str]:
-    user = svc.repository.get_user_by_id(jwt_data.user_id)
-    return user
+    user = svc.repository.update_user(jwt_data.user_id, input.dict())
+    return UpdateMyAccountResponse(phone=input.phone, name=input.name, city=input.city)
