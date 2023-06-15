@@ -1,14 +1,13 @@
-from typing import Any
+from fastapi import APIRouter, Depends, Response
 
-from fastapi import Depends, status
-from pydantic import Field
-
+from app.auth.adapters.jwt_service import JWTData
+from app.auth.router.dependencies import parse_jwt_user_data
 from app.utils import AppModel
 
-from ..adapters.jwt_service import JWTData
 from ..service import Service, get_service
-from .dependencies import parse_jwt_user_data
 from . import router
+from typing import Any
+from pydantic import Field
 
 
 class CreateShanyrakRequest(AppModel):
@@ -17,28 +16,20 @@ class CreateShanyrakRequest(AppModel):
     address: str
     area: float
     rooms_count: int
-    description: str
-
-
+    description: str  
+    
 class CreateShanyrakResponse(AppModel):
-    id: str
+    id: Any = Field(alias="_id")
+    
 
-
-@router.post(
-    "/",
-    status_code=status.HTTP_201_CREATED,
-    response_model=CreateShanyrakResponse,
-)
-def create_shanyrak(
+@router.post("/", response_model=CreateShanyrakResponse)
+def create_new_shanyrak(
     input: CreateShanyrakRequest,
     jwt_data: JWTData = Depends(parse_jwt_user_data),
     svc: Service = Depends(get_service),
-) -> dict[str, str]:
-    response = svc.repository.create_shanyrak(
-        user_id=jwt_data.user_id,
-        shanyrak_data=input.dict(),
-    )
-
-    return response.inserted_id
-
-
+):
+    payload = input.dict()
+    payload["user_id"] = jwt_data.user_id
+    shanyrak_id = svc.repository.create_shanyrak(payload)
+    return CreateShanyrakResponse(id=shanyrak_id)
+    # return Response(status_code=200)

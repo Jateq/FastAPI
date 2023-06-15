@@ -10,24 +10,24 @@ from app.utils import AppModel
 from ..service import Service, get_service
 
 from . import router
- 
-class GetMyShanyrakResponse(AppModel):
-    id: Any = Field(alias="_id")
+
+class PatchMyShanyrakRequest(AppModel):
     type: str
     price: int
     address: str
     area: float
     rooms_count: int
     description: str 
-    user_id: Any
-    media: Any  
+    
 
 
-@router.get("/{shanyrak_id:str}", response_model=GetMyShanyrakResponse)
-def get_my_ashanyrak(
+@router.patch("/{shanyrak_id:str}")
+def update_my_ashanyrak(
     shanyrak_id: str,
+    input: PatchMyShanyrakRequest,
     jwt_data: JWTData = Depends(parse_jwt_user_data),
     svc: Service = Depends(get_service),
 ) -> dict[str, str]:
-    shanyrak = svc.repository.get_shanyrak_by_id(shanyrak_id)
-    return GetMyShanyrakResponse(**shanyrak)
+    payload = input.dict()
+    updated_shanyrak = svc.repository.update_shanyrak(shanyrak_id, jwt_data.user_id, payload)
+    return Response(status_code=200)

@@ -10,24 +10,13 @@ from app.utils import AppModel
 from ..service import Service, get_service
 
 from . import router
- 
-class GetMyShanyrakResponse(AppModel):
-    id: Any = Field(alias="_id")
-    type: str
-    price: int
-    address: str
-    area: float
-    rooms_count: int
-    description: str 
-    user_id: Any
-    media: Any  
 
 
-@router.get("/{shanyrak_id:str}", response_model=GetMyShanyrakResponse)
-def get_my_ashanyrak(
+@router.delete("/{shanyrak_id:str}")
+def delete_my_shanyrak(
     shanyrak_id: str,
     jwt_data: JWTData = Depends(parse_jwt_user_data),
     svc: Service = Depends(get_service),
 ) -> dict[str, str]:
-    shanyrak = svc.repository.get_shanyrak_by_id(shanyrak_id)
-    return GetMyShanyrakResponse(**shanyrak)
+    svc.repository.delete_shanyrak(shanyrak_id, jwt_data.user_id)
+    return Response(status_code=200)

@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from bson.objectid import ObjectId
 from pymongo.database import Database
@@ -19,7 +20,7 @@ class AuthRepository:
 
         self.database["users"].insert_one(payload)
 
-    def get_user_by_id(self, user_id: str) -> dict | None:
+    def get_user_by_id(self, user_id: str) -> Optional[dict]:
         user = self.database["users"].find_one(
             {
                 "_id": ObjectId(user_id),
@@ -27,24 +28,23 @@ class AuthRepository:
         )
         return user
 
-    def get_user_by_email(self, email: str) -> dict | None:
+    def get_user_by_email(self, email: str) -> Optional[dict]:
         user = self.database["users"].find_one(
             {
                 "email": email,
             }
         )
         return user
-
-    def edit_user_by_id(self, user_id: str, userData: dict) -> dict | None:
-        user = self.database["users"].update_one(
-            {"_id": ObjectId(user_id)},
-            {
+    
+    def update_user(self, user_id: str, data: dict):
+        self.database["users"].update_one(
+            filter={"_id": ObjectId(user_id)},
+            update={
                 "$set": {
-                    "phone": userData["phone"],
-                    "name": userData["name"],
-                    "city": userData["city"],
+                    "phone": data["phone"],
+                    "name": data["name"],
+                    "city": data["city"],
                 }
             },
         )
-
-        return user
+    
