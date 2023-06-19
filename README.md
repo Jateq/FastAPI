@@ -57,6 +57,8 @@ The main sections of the project are:
 
 ## ⚙️ Local Development
 
+First of all install poetry
+
 ```
 poetry install
 poetry shell
