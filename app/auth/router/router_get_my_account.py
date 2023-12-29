@@ -20,7 +20,7 @@ class GetMyAccountResponse(AppModel):
     
 
 
-@router.get("/users/me", response_model=GetMyAccountResponse)
+@router.get("/users/mee", response_model=GetMyAccountResponse)
 def get_my_account(
     jwt_data: JWTData = Depends(parse_jwt_user_data),
     svc: Service = Depends(get_service),
